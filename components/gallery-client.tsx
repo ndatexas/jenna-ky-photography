@@ -1,12 +1,12 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useSearchParams } from "next/navigation"
 import { AnimatePresence, motion } from "framer-motion"
-import { X } from "lucide-react"
+import { X, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { PhotoPlaceholder } from "@/components/photo-placeholder"
-import { galleryPhotos, type GalleryPhoto, type PhotoCategory } from "@/lib/gallery-photos"
+import { galleryPhotos as seedPhotos, type GalleryPhoto, type PhotoCategory } from "@/lib/gallery-photos"
 
 type Filter = "all" | PhotoCategory
 
@@ -23,10 +23,28 @@ export function GalleryClient() {
   const initial = (searchParams.get("category") as Filter) || "all"
   const [active, setActive] = useState<Filter>(initial)
   const [selected, setSelected] = useState<GalleryPhoto | null>(null)
+  const [photos, setPhotos] = useState<GalleryPhoto[]>(seedPhotos)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    let cancelled = false
+    fetch("/api/gallery", { cache: "no-store" })
+      .then((res) => (res.ok ? res.json() : seedPhotos))
+      .then((data: GalleryPhoto[]) => {
+        if (!cancelled && Array.isArray(data) && data.length > 0) setPhotos(data)
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (!cancelled) setLoading(false)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   const visible = useMemo(
-    () => (active === "all" ? galleryPhotos : galleryPhotos.filter((i) => i.category === active)),
-    [active]
+    () => (active === "all" ? photos : photos.filter((i) => i.category === active)),
+    [active, photos]
   )
 
   return (
@@ -41,7 +59,7 @@ export function GalleryClient() {
         </p>
       </div>
 
-      <div className="my-10 flex flex-wrap gap-3">
+      <div className="my-10 flex flex-wrap items-center gap-3">
         {filters.map((f) => (
           <button
             key={f.value}
@@ -56,6 +74,7 @@ export function GalleryClient() {
             {f.label}
           </button>
         ))}
+        {loading && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
       </div>
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
