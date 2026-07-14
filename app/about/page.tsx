@@ -58,8 +58,8 @@ export default function AboutPage() {
             <a href="tel:+16232622149" className="flex items-center gap-3 hover:text-accent">
               <Phone className="h-4 w-4" /> (623) 262-2149
             </a>
-            <a href="mailto:jennacalton0@gmail.com" className="flex items-center gap-3 hover:text-accent">
-              <Mail className="h-4 w-4" /> jennacalton0@gmail.com
+            <a href="mailto:jkmcalton@outlook.com" className="flex items-center gap-3 hover:text-accent">
+              <Mail className="h-4 w-4" /> jkmcalton@outlook.com
             </a>
             <span className="flex items-center gap-3">
               <MapPin className="h-4 w-4" /> Dallas, Texas &amp; surrounding areas
