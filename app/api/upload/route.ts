@@ -5,11 +5,14 @@ import type { PhotoAspect, PhotoCategory } from "@/lib/gallery-photos"
 
 export const dynamic = "force-dynamic"
 
-const VALID_CATEGORIES: PhotoCategory[] = ["film", "family", "personal", "events"]
+const VALID_CATEGORIES: PhotoCategory[] = ["film", "family", "personal", "events", "brand"]
 const VALID_ASPECTS: PhotoAspect[] = ["square", "portrait", "landscape", "tall"]
 
 export async function POST(request: Request) {
-  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+  const hasBlobConfig = Boolean(
+    process.env.BLOB_READ_WRITE_TOKEN || process.env.BLOB_STORE_ID
+  )
+  if (!hasBlobConfig) {
     return NextResponse.json(
       { error: "Photo storage isn't connected yet. Ask your site admin to connect Vercel Blob storage in project settings." },
       { status: 503 }
@@ -56,6 +59,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: true, added: newEntries.length, total: updated.length })
   } catch (err) {
     console.error("Upload failed:", err)
-    return NextResponse.json({ error: "Upload failed. Please try again." }, { status: 500 })
+    const message = err instanceof Error ? err.message : "Unknown error"
+    return NextResponse.json(
+      { error: `Upload failed: ${message}. Please try again.` },
+      { status: 500 }
+    )
   }
 }
