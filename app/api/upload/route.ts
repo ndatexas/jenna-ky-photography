@@ -1,18 +1,10 @@
 import { handleUpload, type HandleUploadBody } from "@vercel/blob/client"
 import { NextResponse } from "next/server"
-import { addGalleryPhotos } from "@/lib/gallery-store"
-import type { PhotoAspect, PhotoCategory } from "@/lib/gallery-photos"
 
 export const dynamic = "force-dynamic"
 
-const VALID_CATEGORIES: PhotoCategory[] = ["film", "family", "personal", "events", "brand"]
-const VALID_ASPECTS: PhotoAspect[] = ["square", "portrait", "landscape", "tall"]
-
 interface ClientPayload {
   password: string
-  category: string
-  aspect: string
-  label: string
 }
 
 export async function POST(request: Request) {
@@ -34,37 +26,17 @@ export async function POST(request: Request) {
           throw new Error("Incorrect password.")
         }
 
-        const category = VALID_CATEGORIES.includes(parsed.category as PhotoCategory)
-          ? parsed.category
-          : "personal"
-        const aspect = VALID_ASPECTS.includes(parsed.aspect as PhotoAspect)
-          ? parsed.aspect
-          : "landscape"
-
         return {
           allowedContentTypes: ["image/jpeg", "image/png", "image/webp", "image/heic", "image/heif"],
           addRandomSuffix: true,
-          tokenPayload: JSON.stringify({
-            category,
-            aspect,
-            label: parsed.label || "Photo",
-          }),
         }
       },
-      onUploadCompleted: async ({ blob, tokenPayload }) => {
-        try {
-          const meta = tokenPayload ? JSON.parse(tokenPayload) : {}
-          await addGalleryPhotos([
-            {
-              category: (meta.category as PhotoCategory) || "personal",
-              aspect: (meta.aspect as PhotoAspect) || "landscape",
-              label: meta.label || "Photo",
-              imageUrl: blob.url,
-            },
-          ])
-        } catch (err) {
-          console.error("Failed to save gallery entry after upload:", err)
-        }
+      onUploadCompleted: async () => {
+        // Gallery metadata (category/aspect/label) is written in ONE batched
+        // call from the client after all uploads finish, via /api/gallery/manage.
+        // This avoids multiple simultaneous uploads racing to read-modify-write
+        // the same shared metadata file, which previously caused some uploaded
+        // photos to silently never show up in the gallery.
       },
     })
 
