@@ -1,6 +1,7 @@
 "use client"
 
 import { useCallback, useRef, useState } from "react"
+import { upload } from "@vercel/blob/client"
 import { Upload, X, CheckCircle, Loader2, Lock } from "lucide-react"
 import type { PhotoAspect, PhotoCategory } from "@/lib/gallery-photos"
 
@@ -35,6 +36,7 @@ export default function AdminUploadPage() {
   const [pending, setPending] = useState<PendingFile[]>([])
   const [defaultCategory, setDefaultCategory] = useState<PhotoCategory>("family")
   const [uploading, setUploading] = useState(false)
+  const [progress, setProgress] = useState("")
   const [result, setResult] = useState<{ added: number } | null>(null)
   const [error, setError] = useState("")
   const inputRef = useRef<HTMLInputElement>(null)
@@ -88,35 +90,44 @@ export default function AdminUploadPage() {
     setError("")
     setResult(null)
 
+    let added = 0
+
     try {
-      const formData = new FormData()
-      formData.append("password", password)
-      pending.forEach((p) => {
-        formData.append("files", p.file)
-        formData.append("categories", p.category)
-        formData.append("aspects", p.aspect)
-        formData.append("labels", p.label)
-      })
+      for (let i = 0; i < pending.length; i++) {
+        const p = pending[i]
+        setProgress(`Uploading ${i + 1} of ${pending.length}...`)
 
-      const res = await fetch("/api/upload", { method: "POST", body: formData })
-      const data = await res.json()
+        await upload(p.file.name, p.file, {
+          access: "public",
+          handleUploadUrl: "/api/upload",
+          clientPayload: JSON.stringify({
+            password,
+            category: p.category,
+            aspect: p.aspect,
+            label: p.label,
+          }),
+        })
 
-      if (!res.ok) {
-        if (res.status === 401) {
-          setUnlocked(false)
-          setAuthError("Password was rejected. Please re-enter it.")
-        }
-        setError(data.error || "Upload failed.")
-        return
+        added++
       }
 
-      setResult({ added: data.added })
+      setResult({ added })
       setPending([])
       if (inputRef.current) inputRef.current.value = ""
-    } catch {
-      setError("Something went wrong. Check your connection and try again.")
+    } catch (err) {
+      const message = err instanceof Error ? err.message : ""
+      if (message.toLowerCase().includes("password") || message.toLowerCase().includes("incorrect")) {
+        setUnlocked(false)
+        setAuthError("Password was rejected. Please re-enter it.")
+      }
+      setError(
+        added > 0
+          ? `${added} photo${added > 1 ? "s" : ""} uploaded before an error occurred: ${message || "Upload failed."}`
+          : message || "Upload failed. Please try again."
+      )
     } finally {
       setUploading(false)
+      setProgress("")
     }
   }
 
@@ -251,7 +262,7 @@ export default function AdminUploadPage() {
             className="inline-flex items-center gap-2 border border-foreground bg-foreground px-6 py-3 font-body text-sm uppercase tracking-[0.16em] text-background transition-colors hover:bg-transparent hover:text-foreground disabled:opacity-50"
           >
             {uploading && <Loader2 className="h-4 w-4 animate-spin" />}
-            {uploading ? "Uploading..." : `Upload ${pending.length} Photo${pending.length > 1 ? "s" : ""}`}
+            {uploading ? progress || "Uploading..." : `Upload ${pending.length} Photo${pending.length > 1 ? "s" : ""}`}
           </button>
         </div>
       )}
