@@ -1,4 +1,4 @@
-export type PhotoCategory = "film" | "family" | "personal" | "events"
+export type PhotoCategory = "film" | "family" | "personal" | "events" | "brand"
 export type PhotoAspect = "square" | "portrait" | "landscape" | "tall"
 
 export interface GalleryPhoto {
