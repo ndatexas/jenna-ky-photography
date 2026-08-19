@@ -17,6 +17,7 @@ const CATEGORY_OPTIONS: { value: PhotoCategory; label: string }[] = [
   { value: "family", label: "Family" },
   { value: "personal", label: "Personal Portraits" },
   { value: "events", label: "Events" },
+  { value: "brand", label: "Brand Shoots" },
 ]
 
 function classifyAspect(width: number, height: number): PhotoAspect {
