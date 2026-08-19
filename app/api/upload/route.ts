@@ -1,5 +1,5 @@
+import { handleUpload, type HandleUploadBody } from "@vercel/blob/client"
 import { NextResponse } from "next/server"
-import { put } from "@vercel/blob"
 import { addGalleryPhotos } from "@/lib/gallery-store"
 import type { PhotoAspect, PhotoCategory } from "@/lib/gallery-photos"
 
@@ -8,61 +8,70 @@ export const dynamic = "force-dynamic"
 const VALID_CATEGORIES: PhotoCategory[] = ["film", "family", "personal", "events", "brand"]
 const VALID_ASPECTS: PhotoAspect[] = ["square", "portrait", "landscape", "tall"]
 
+interface ClientPayload {
+  password: string
+  category: string
+  aspect: string
+  label: string
+}
+
 export async function POST(request: Request) {
-  const hasBlobConfig = Boolean(
-    process.env.BLOB_READ_WRITE_TOKEN || process.env.BLOB_STORE_ID
-  )
-  if (!hasBlobConfig) {
-    return NextResponse.json(
-      { error: "Photo storage isn't connected yet. Ask your site admin to connect Vercel Blob storage in project settings." },
-      { status: 503 }
-    )
-  }
-
-  const formData = await request.formData()
-  const password = formData.get("password")
-  if (!process.env.ADMIN_PASSWORD || password !== process.env.ADMIN_PASSWORD) {
-    return NextResponse.json({ error: "Incorrect password." }, { status: 401 })
-  }
-
-  const files = formData.getAll("files") as File[]
-  const categories = formData.getAll("categories") as string[]
-  const aspects = formData.getAll("aspects") as string[]
-  const labels = formData.getAll("labels") as string[]
-
-  if (files.length === 0) {
-    return NextResponse.json({ error: "No files provided." }, { status: 400 })
-  }
+  const body = (await request.json()) as HandleUploadBody
 
   try {
-    const newEntries: Omit<import("@/lib/gallery-photos").GalleryPhoto, "id">[] = []
+    const jsonResponse = await handleUpload({
+      body,
+      request,
+      onBeforeGenerateToken: async (_pathname, clientPayload) => {
+        let parsed: ClientPayload | null = null
+        try {
+          parsed = clientPayload ? (JSON.parse(clientPayload) as ClientPayload) : null
+        } catch {
+          parsed = null
+        }
 
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i]
-      const category = VALID_CATEGORIES.includes(categories[i] as PhotoCategory)
-        ? (categories[i] as PhotoCategory)
-        : "personal"
-      const aspect = VALID_ASPECTS.includes(aspects[i] as PhotoAspect)
-        ? (aspects[i] as PhotoAspect)
-        : "landscape"
-      const label = labels[i]?.trim() || "Photo"
+        if (!parsed || !process.env.ADMIN_PASSWORD || parsed.password !== process.env.ADMIN_PASSWORD) {
+          throw new Error("Incorrect password.")
+        }
 
-      const blob = await put(`gallery/images/${Date.now()}-${i}-${file.name}`, file, {
-        access: "public",
-        addRandomSuffix: true,
-      })
+        const category = VALID_CATEGORIES.includes(parsed.category as PhotoCategory)
+          ? parsed.category
+          : "personal"
+        const aspect = VALID_ASPECTS.includes(parsed.aspect as PhotoAspect)
+          ? parsed.aspect
+          : "landscape"
 
-      newEntries.push({ category, aspect, label, imageUrl: blob.url })
-    }
+        return {
+          allowedContentTypes: ["image/jpeg", "image/png", "image/webp", "image/heic", "image/heif"],
+          addRandomSuffix: true,
+          tokenPayload: JSON.stringify({
+            category,
+            aspect,
+            label: parsed.label || "Photo",
+          }),
+        }
+      },
+      onUploadCompleted: async ({ blob, tokenPayload }) => {
+        try {
+          const meta = tokenPayload ? JSON.parse(tokenPayload) : {}
+          await addGalleryPhotos([
+            {
+              category: (meta.category as PhotoCategory) || "personal",
+              aspect: (meta.aspect as PhotoAspect) || "landscape",
+              label: meta.label || "Photo",
+              imageUrl: blob.url,
+            },
+          ])
+        } catch (err) {
+          console.error("Failed to save gallery entry after upload:", err)
+        }
+      },
+    })
 
-    const updated = await addGalleryPhotos(newEntries)
-    return NextResponse.json({ success: true, added: newEntries.length, total: updated.length })
+    return NextResponse.json(jsonResponse)
   } catch (err) {
-    console.error("Upload failed:", err)
-    const message = err instanceof Error ? err.message : "Unknown error"
-    return NextResponse.json(
-      { error: `Upload failed: ${message}. Please try again.` },
-      { status: 500 }
-    )
+    console.error("Upload token error:", err)
+    const message = err instanceof Error ? err.message : "Upload failed."
+    return NextResponse.json({ error: message }, { status: 400 })
   }
 }
