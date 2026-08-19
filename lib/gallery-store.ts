@@ -40,3 +40,36 @@ export async function addGalleryPhotos(
   await saveGalleryPhotos(updated)
   return updated
 }
+
+export async function deleteGalleryPhoto(id: number): Promise<GalleryPhoto[]> {
+  const current = await getGalleryPhotos()
+  const updated = current.filter((p) => p.id !== id)
+  await saveGalleryPhotos(updated)
+  return updated
+}
+
+export async function updateGalleryPhoto(
+  id: number,
+  patch: Partial<Omit<GalleryPhoto, "id">>
+): Promise<GalleryPhoto[]> {
+  const current = await getGalleryPhotos()
+  const updated = current.map((p) => (p.id === id ? { ...p, ...patch } : p))
+  await saveGalleryPhotos(updated)
+  return updated
+}
+
+export async function reorderGalleryPhotos(orderedIds: number[]): Promise<GalleryPhoto[]> {
+  const current = await getGalleryPhotos()
+  const byId = new Map(current.map((p) => [p.id, p]))
+  const reordered: GalleryPhoto[] = []
+  for (const id of orderedIds) {
+    const photo = byId.get(id)
+    if (photo) {
+      reordered.push(photo)
+      byId.delete(id)
+    }
+  }
+  for (const p of byId.values()) reordered.push(p)
+  await saveGalleryPhotos(reordered)
+  return reordered
+}
