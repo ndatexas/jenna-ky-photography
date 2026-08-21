@@ -6,6 +6,7 @@ import { FilmStrip } from "@/components/film-strip"
 import { ShootingStar } from "@/components/shooting-star"
 import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
+import { InquiryPopup } from "@/components/inquiry-popup"
 
 const display = Cormorant_Garamond({
   subsets: ["latin"],
@@ -48,6 +49,7 @@ export default function RootLayout({
         <SiteHeader />
         {children}
         <SiteFooter />
+        <InquiryPopup />
       </body>
     </html>
   )
