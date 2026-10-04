@@ -2,20 +2,20 @@
 
 import Link from "next/link"
 import { motion } from "framer-motion"
-import { Image as ImageIcon, Users, Calendar, User } from "lucide-react"
+import { Briefcase, UserSquare2, User, Calendar, Users, Image as ImageIcon } from "lucide-react"
 
 const specialties = [
   {
-    icon: ImageIcon,
-    title: "Film Photography",
-    description: "Grain, warmth, and imperfection, captured on film.",
-    href: "/gallery?category=film",
+    icon: Briefcase,
+    title: "Brand & Product Shoots",
+    description: "Lookbook, e-commerce, and social content that shows your pieces with intention.",
+    href: "/gallery?category=brand",
   },
   {
-    icon: Users,
-    title: "Family",
-    description: "Relaxed, natural sessions that reflect how your family actually is.",
-    href: "/gallery?category=family",
+    icon: UserSquare2,
+    title: "Headshots",
+    description: "Consistent, professional headshots for individuals and whole teams.",
+    href: "/gallery?category=headshots",
   },
   {
     icon: User,
@@ -29,6 +29,18 @@ const specialties = [
     description: "Live energy documented as it happens.",
     href: "/gallery?category=events",
   },
+  {
+    icon: Users,
+    title: "Family",
+    description: "Relaxed, natural sessions that reflect how your family actually is.",
+    href: "/gallery?category=family",
+  },
+  {
+    icon: ImageIcon,
+    title: "Film Photography",
+    description: "Grain, warmth, and imperfection, captured on film.",
+    href: "/gallery?category=film",
+  },
 ]
 
 export function SpecialtiesSection() {
@@ -41,7 +53,7 @@ export function SpecialtiesSection() {
         </h2>
       </div>
 
-      <div className="grid grid-cols-1 gap-px overflow-hidden rounded-sm border border-border/70 bg-border/70 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-px overflow-hidden rounded-sm border border-border/70 bg-border/70 sm:grid-cols-2 lg:grid-cols-3">
         {specialties.map((s, i) => (
           <motion.div
             key={s.title}
