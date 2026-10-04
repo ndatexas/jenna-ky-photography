@@ -23,11 +23,12 @@ interface PendingFile {
 }
 
 const CATEGORY_OPTIONS: { value: PhotoCategory; label: string }[] = [
-  { value: "film", label: "Film Photography" },
-  { value: "family", label: "Family" },
+  { value: "brand", label: "Brand Shoots" },
+  { value: "headshots", label: "Headshots" },
   { value: "personal", label: "Personal Portraits" },
   { value: "events", label: "Events" },
-  { value: "brand", label: "Brand Shoots" },
+  { value: "family", label: "Family" },
+  { value: "film", label: "Film Photography" },
 ]
 
 const FILTER_OPTIONS: { value: PhotoCategory | "all"; label: string }[] = [
@@ -48,7 +49,7 @@ export default function AdminUploadPage() {
   const [authError, setAuthError] = useState("")
 
   const [pending, setPending] = useState<PendingFile[]>([])
-  const [defaultCategory, setDefaultCategory] = useState<PhotoCategory>("family")
+  const [defaultCategory, setDefaultCategory] = useState<PhotoCategory>("brand")
   const [uploading, setUploading] = useState(false)
   const [progress, setProgress] = useState("")
   const [result, setResult] = useState<{ added: number; failed: number } | null>(null)
