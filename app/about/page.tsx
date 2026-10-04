@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Phone, Mail, MapPin, ExternalLink } from "lucide-react"
+import { Phone, Send, MapPin, ExternalLink } from "lucide-react"
 import { PhotoPlaceholder } from "@/components/photo-placeholder"
 
 export const metadata = {
@@ -27,16 +27,17 @@ export default function AboutPage() {
 
           <div className="mt-8 space-y-5 text-base leading-relaxed text-muted-foreground md:text-lg">
             <p>
-              I am a photographer based in Dallas, Texas, specializing in events,
-              family photos, and personal portraits. My approach is rooted in
-              patience and attentiveness, capturing genuine moments as they unfold
+              I am a photographer based in Dallas, Texas, specializing in brand and
+              product shoots, headshots, and personal portraits. My approach is rooted
+              in patience and attentiveness, capturing genuine moments as they unfold
               rather than staging them.
             </p>
             <p>
               My background is not limited to photography. Years spent in marketing,
               promotions, and event coordination shaped how I work today, giving me
               an instinct for anticipating meaningful moments and understanding what
-              makes a story worth telling. I bring that experience into every session.
+              makes a story, or a brand, worth telling. I bring that experience into
+              every session, from a single portrait to a full team headshot day.
             </p>
             <p>
               Alongside my client work, I continue to shoot film, a medium that
@@ -45,9 +46,9 @@ export default function AboutPage() {
             </p>
             <p>
               I am currently building my photography practice in Dallas and the
-              surrounding areas, and I welcome the opportunity to work with new
-              clients across weddings, events, family sessions, and personal
-              portraits.
+              surrounding areas, and I welcome the opportunity to work with brands,
+              teams, and individuals across product shoots, headshots, personal
+              portraits, events, and family sessions.
             </p>
           </div>
 
@@ -58,9 +59,9 @@ export default function AboutPage() {
             <a href="tel:+16232622149" className="flex items-center gap-3 hover:text-accent">
               <Phone className="h-4 w-4" /> (623) 262-2149
             </a>
-            <a href="mailto:jkmcalton@outlook.com" className="flex items-center gap-3 hover:text-accent">
-              <Mail className="h-4 w-4" /> jkmcalton@outlook.com
-            </a>
+            <Link href="/inquire" className="flex items-center gap-3 hover:text-accent">
+              <Send className="h-4 w-4" /> Send an Inquiry
+            </Link>
             <span className="flex items-center gap-3">
               <MapPin className="h-4 w-4" /> Dallas, Texas &amp; surrounding areas
             </span>
