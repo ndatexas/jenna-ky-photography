@@ -29,7 +29,7 @@ const body = Jost({
 export const metadata: Metadata = {
   title: "Jenna KY Photography",
   description:
-    "Film, wedding, event, and portrait photography by Jenna Calton, based in Dallas, TX.",
+    "Brand, product, headshot, and portrait photography by Jenna Calton, based in Dallas, TX.",
 }
 
 export default function RootLayout({

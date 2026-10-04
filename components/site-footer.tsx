@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Phone, Mail, ExternalLink } from "lucide-react"
+import { Phone, Send, ExternalLink } from "lucide-react"
 
 export function SiteFooter() {
   return (
@@ -14,9 +14,9 @@ export function SiteFooter() {
           <a href="tel:+16232622149" className="flex items-center gap-2 hover:text-accent">
             <Phone className="h-4 w-4" /> (623) 262-2149
           </a>
-          <a href="mailto:jkmcalton@outlook.com" className="flex items-center gap-2 hover:text-accent">
-            <Mail className="h-4 w-4" /> jkmcalton@outlook.com
-          </a>
+          <Link href="/inquire" className="flex items-center gap-2 hover:text-accent">
+            <Send className="h-4 w-4" /> Send an Inquiry
+          </Link>
           <Link
             href="https://www.linkedin.com/in/jenna-calton-11788526a/"
             target="_blank"
