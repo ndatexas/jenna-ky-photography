@@ -115,3 +115,13 @@ body {
   transform: translateY(-50%) rotate(3deg);
   transform-origin: right center;
 }
+
+/* Hide scrollbar for horizontally scrollable portfolio strips */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}

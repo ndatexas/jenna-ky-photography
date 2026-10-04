@@ -12,11 +12,12 @@ type Filter = "all" | PhotoCategory
 
 const filters: { value: Filter; label: string }[] = [
   { value: "all", label: "All Work" },
-  { value: "film", label: "Film Photography" },
-  { value: "family", label: "Family" },
+  { value: "brand", label: "Brand Shoots" },
+  { value: "headshots", label: "Headshots" },
   { value: "personal", label: "Personal" },
   { value: "events", label: "Events" },
-  { value: "brand", label: "Brand Shoots" },
+  { value: "family", label: "Family" },
+  { value: "film", label: "Film Photography" },
 ]
 
 export function GalleryClient() {
@@ -54,7 +55,7 @@ export function GalleryClient() {
         <p className="mb-3 font-body text-xs uppercase tracking-[0.25em] text-accent">Portfolio</p>
         <h1 className="font-display text-5xl font-medium text-foreground">Gallery</h1>
         <p className="mt-4 text-muted-foreground">
-          A collection of my film, family, personal, event, and brand work.
+          A collection of brand, headshot, personal, event, and family work.
           <br />
           Always looking for the next moment to capture.
         </p>
