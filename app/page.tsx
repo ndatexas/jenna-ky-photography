@@ -2,6 +2,11 @@ import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 import { SpecialtiesSection } from "@/components/specialties-section"
 import { PhotoPlaceholder } from "@/components/photo-placeholder"
+import { PortfolioScroll } from "@/components/portfolio-scroll"
+import { caseStudies } from "@/lib/case-studies"
+import { galleryPhotos } from "@/lib/gallery-photos"
+
+const scrollPhotos = galleryPhotos.slice(0, 14)
 
 export default function HomePage() {
   return (
@@ -13,13 +18,14 @@ export default function HomePage() {
             Dallas, TX Photographer
           </p>
           <h1 className="font-display text-5xl font-medium leading-[1.05] text-foreground md:text-6xl">
-            Real moments,
-            <br /> honestly seen.
+            Brands, headshots,
+            <br /> and portraits with intention.
           </h1>
           <p className="mt-6 text-base leading-relaxed text-muted-foreground md:text-lg">
-            Photographing events, family photos, and personal portraits with the
-            same patience I bring to film, letting the moment happen before I take
-            it.
+            I'm Jenna, a Dallas-based photographer working with brands, teams, and
+            individuals on product shoots, headshots, personal portraits, and
+            everything in between, styled with the same patience and attention to
+            detail in every frame.
           </p>
           <div className="mt-8 flex items-center justify-center gap-6 md:justify-start">
             <Link
@@ -39,10 +45,10 @@ export default function HomePage() {
 
         <div className="w-full max-w-md fade-up" style={{ animationDelay: "150ms" }}>
           <PhotoPlaceholder
-            label="Featured Portrait"
+            label="Jenna Calton"
             aspect="tall"
             className="w-full"
-            imageUrl="https://galaxy-prod.tlcdn.com/view/user_2yN2f2AMpIolmtCtB2mqQ54a2u1/0fd204689a7b4e6db987d45c711581b7.jpg"
+            imageUrl="https://g.tlcdn.com/view/e8108ea7018546bbaef746d8cb91f364.png"
           />
         </div>
       </section>
@@ -53,12 +59,17 @@ export default function HomePage() {
 
       <div className="hairline mx-auto max-w-6xl md:mx-10" />
 
-      {/* Quick preview strip */}
+      {/* Scrollable portfolio feed */}
       <section className="mx-auto max-w-6xl px-6 py-20 md:px-10">
         <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
-          <h2 className="font-display text-4xl font-medium text-foreground md:text-5xl">
-            Recent Work
-          </h2>
+          <div className="max-w-xl">
+            <p className="mb-3 font-body text-xs uppercase tracking-[0.25em] text-accent">
+              Portfolio
+            </p>
+            <h2 className="font-display text-4xl font-medium text-foreground md:text-5xl">
+              Browse the Work
+            </h2>
+          </div>
           <Link
             href="/gallery"
             className="font-body text-sm uppercase tracking-[0.16em] text-muted-foreground hover:text-accent"
@@ -66,28 +77,47 @@ export default function HomePage() {
             Full Gallery &rarr;
           </Link>
         </div>
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-          <PhotoPlaceholder
-            label="Family"
-            aspect="portrait"
-            imageUrl="https://galaxy-prod.tlcdn.com/view/user_2yN2f2AMpIolmtCtB2mqQ54a2u1/e67d534e0da144a5b928106141137ac3.jpg"
-          />
-          <PhotoPlaceholder
-            label="Film"
-            aspect="square"
-            imageUrl="https://galaxy-prod.tlcdn.com/view/user_2yN2f2AMpIolmtCtB2mqQ54a2u1/87cd687d44ec4ebda54339745174287a.jpg"
-          />
-          <PhotoPlaceholder
-            label="Event"
-            aspect="landscape"
-            className="col-span-2 md:col-span-1"
-            imageUrl="https://galaxy-prod.tlcdn.com/view/user_2yN2f2AMpIolmtCtB2mqQ54a2u1/5600bf5d4ad14f3c9b8f922e4b5f41c5.jpg"
-          />
-          <PhotoPlaceholder
-            label="Personal"
-            aspect="tall"
-            imageUrl="https://galaxy-prod.tlcdn.com/view/user_2yN2f2AMpIolmtCtB2mqQ54a2u1/ba520d4b3eae491289533001d36df05a.jpg"
-          />
+        <PortfolioScroll photos={scrollPhotos} />
+      </section>
+
+      <div className="hairline mx-auto max-w-6xl md:mx-10" />
+
+      {/* Case studies preview */}
+      <section className="mx-auto max-w-6xl px-6 py-20 md:px-10">
+        <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
+          <div className="max-w-xl">
+            <p className="mb-3 font-body text-xs uppercase tracking-[0.25em] text-accent">
+              Case Studies
+            </p>
+            <h2 className="font-display text-4xl font-medium text-foreground md:text-5xl">
+              See the Work, Then Picture Yours
+            </h2>
+          </div>
+          <Link
+            href="/case-studies"
+            className="font-body text-sm uppercase tracking-[0.16em] text-muted-foreground hover:text-accent"
+          >
+            All Case Studies &rarr;
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+          {caseStudies.map((study) => (
+            <Link key={study.slug} href="/case-studies" className="group block">
+              <PhotoPlaceholder
+                label={study.title}
+                aspect="portrait"
+                imageUrl={study.imageUrl}
+                className="transition-transform duration-300 group-hover:-translate-y-1"
+              />
+              <p className="mt-4 font-body text-xs uppercase tracking-[0.16em] text-accent">
+                {study.category}
+              </p>
+              <h3 className="mt-1 font-display text-xl font-medium text-foreground">
+                {study.title}
+              </h3>
+            </Link>
+          ))}
         </div>
       </section>
     </main>
